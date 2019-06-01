@@ -1,9 +1,9 @@
 package files
 
 import (
-	"fmt"
 	"io/ioutil"
 	"log"
+	"time"
 )
 
 // DirInfo stores folder data recursively
@@ -11,6 +11,7 @@ type DirInfo struct {
 	Name     string    `json:"name"`
 	IsFolder bool      `json:"isFolder"`
 	Size     int64     `json:"size"`
+	Time     time.Time `json:"time"`
 	Files    []DirInfo `json:"files"`
 }
 
@@ -24,11 +25,11 @@ func ListFolder(folder string) DirInfo {
 	Files := []DirInfo{}
 
 	for _, f := range files {
-		fmt.Println(f.Name(), f.IsDir(), f.Size())
 		Files = append(Files, DirInfo{
 			Name:     f.Name(),
 			IsFolder: f.IsDir(),
 			Size:     f.Size(),
+			Time:     f.ModTime(),
 		})
 	}
 
