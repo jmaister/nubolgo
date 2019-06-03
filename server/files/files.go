@@ -65,3 +65,10 @@ func ListFolder(rootFolder string, folder string) (DirInfo, error) {
 
 	return info, nil
 }
+
+/*
+// ListFolder lists the contents of a folder (not recursively)
+func SaveFile(path string, file File) (bool, error) {
+
+}
+*/

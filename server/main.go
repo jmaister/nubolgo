@@ -44,6 +44,7 @@ func main() {
 	}
 
 	api.GET("/files", GetFilesHandler)
+	api.POST("/files", PostFilesHandler)
 
 	router.Run(":3000")
 }
@@ -66,5 +67,24 @@ func GetFilesHandler(c *gin.Context) {
 		c.Header("Content-Type", "application/json")
 		c.JSON(http.StatusOK, data)
 	}
+}
 
+// PostFilesHandler stores files from clients
+func PostFilesHandler(c *gin.Context) {
+	form, _ := c.MultipartForm()
+	files := form.File["upload[]"]
+	path := form.Value["path"]
+
+	log.Println("path:", path)
+
+	for _, file := range files {
+		log.Println(file.Filename)
+		log.Println(config.RootFolder + "/" + file.Filename)
+
+		//c.SaveUploadedFile(file, config.RootFolder+path+'/'+file.Filename)
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"OK": true,
+	})
 }

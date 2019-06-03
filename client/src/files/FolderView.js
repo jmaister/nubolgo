@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import Axios from "axios";
 
 
 class FolderView extends Component {
@@ -8,26 +7,33 @@ class FolderView extends Component {
         super(props);
         this.state = { 
             isLoaded: false
-         }
+        }
+
+        this.folderClick = this.folderClick.bind(this);
     }
 
-    componentDidMount() {
-        Axios.get('/api/files?path=' + this.props.path)
-            .then(result => {
-                this.setState({
-                    folder: result.data,
-                    isLoaded: true
-                });
-            })
+    folderClick(folder) {
+        this.props.updatePath(this.props.path + folder.name);
     }
 
     render() {
-        const { isLoaded, folder } = this.state;
+        console.log("state", this.state);
+        const { isLoaded, folder } = this.props;
         if (!isLoaded) {
             return <div>Loading...</div>;
         } else {
-            return <div>Loaded path: <b>{this.props.path}</b>
-                <div>{JSON.stringify(folder)}</div>
+            const items = folder.files;
+            console.log("items", items);
+            let folders = items.filter(f => f.isFolder).map(folder => {
+                return <div key={folder.name} onClick={this.folderClick.bind(this, folder)}>📁 {folder.name}</div>
+            });
+            let files = items.filter(f => !f.isFolder).map(file => {
+                return <div key={file.name}>📄 {file.name}</div>
+            });
+
+            return <div>
+                {folders}
+                {files}
             </div>;
         }
         
