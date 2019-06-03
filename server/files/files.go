@@ -1,8 +1,11 @@
 package files
 
 import (
+	"errors"
 	"io/ioutil"
 	"log"
+	"path/filepath"
+	"strings"
 	"time"
 )
 
@@ -16,10 +19,30 @@ type DirInfo struct {
 }
 
 // ListFolder lists the contents of a folder (not recursively)
-func ListFolder(folder string) DirInfo {
-	files, err := ioutil.ReadDir(folder)
+func ListFolder(rootFolder string, folder string) (DirInfo, error) {
+
+	rootFolder, err := filepath.Abs(rootFolder)
 	if err != nil {
-		log.Fatal(err)
+		return DirInfo{}, err
+	}
+
+	fullPath, err := filepath.Abs(rootFolder + folder)
+	if err != nil {
+		return DirInfo{}, err
+	}
+
+	// TODO: check if folder is under rootFolder
+	log.Println("ListFolder root:", rootFolder)
+	log.Println("ListFolder full: ", fullPath)
+
+	if !strings.HasPrefix(fullPath, rootFolder) {
+		return DirInfo{}, errors.New("do not try to hack")
+	}
+
+	files, err := ioutil.ReadDir(fullPath)
+	if err != nil {
+		// log.Fatal(err)
+		return DirInfo{}, err
 	}
 
 	Files := []DirInfo{}
@@ -40,5 +63,5 @@ func ListFolder(folder string) DirInfo {
 		Files:    Files,
 	}
 
-	return info
+	return info, nil
 }

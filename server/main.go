@@ -1,10 +1,12 @@
 package main
 
 import (
-	"./files"
-
 	"flag"
+	"log"
 	"net/http"
+	"path/filepath"
+
+	"./files"
 
 	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
@@ -21,12 +23,16 @@ func main() {
 
 	rootFolder := flag.String("root", "./tmp", "Storage root folder.")
 	flag.Parse()
-
 	config.RootFolder = *rootFolder
+
+	// TODO: check if folder exists, or create
 
 	router := gin.Default()
 
-	router.Use(static.Serve("/", static.LocalFile("./views", true)))
+	clientPath, _ := filepath.Abs("client/dist")
+	log.Println("Using client files from: ", clientPath)
+
+	router.Use(static.Serve("/", static.LocalFile(clientPath, true)))
 
 	api := router.Group("/api")
 	{
@@ -50,9 +56,15 @@ func GetFilesHandler(c *gin.Context) {
 		path = "/"
 	}
 
-	data := files.ListFolder(path)
+	data, err := files.ListFolder(config.RootFolder, path)
+	if err != nil {
+		c.Header("Content-Type", "application/json")
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+	} else {
+		c.Header("Content-Type", "application/json")
+		c.JSON(http.StatusOK, data)
+	}
 
-	// c.BindJSON(&data)
-	c.Header("Content-Type", "application/json")
-	c.JSON(http.StatusOK, data)
 }
