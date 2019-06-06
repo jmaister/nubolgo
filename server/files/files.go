@@ -11,6 +11,7 @@ import (
 
 // DirInfo stores folder data recursively
 type DirInfo struct {
+	FullPath string    `json:"fullPath"`
 	Name     string    `json:"name"`
 	IsFolder bool      `json:"isFolder"`
 	Size     int64     `json:"size"`
@@ -30,10 +31,22 @@ func ListFolder(rootFolder string, folder string) (DirInfo, error) {
 	if err != nil {
 		return DirInfo{}, err
 	}
+	fullPath = filepath.Clean(fullPath)
+
+	relativePath, err := filepath.Rel(rootFolder, fullPath)
+	if err != nil {
+		return DirInfo{}, err
+	}
+	if relativePath == "." {
+		relativePath = "/"
+	} else if !strings.HasPrefix(relativePath, "/") {
+		relativePath = "/" + relativePath
+	}
 
 	// TODO: check if folder is under rootFolder
 	log.Println("ListFolder root:", rootFolder)
-	log.Println("ListFolder full: ", fullPath)
+	log.Println("ListFolder full:", fullPath)
+	log.Println("ListFolder  rel:", relativePath)
 
 	if !strings.HasPrefix(fullPath, rootFolder) {
 		return DirInfo{}, errors.New("do not try to hack")
@@ -48,7 +61,11 @@ func ListFolder(rootFolder string, folder string) (DirInfo, error) {
 	Files := []DirInfo{}
 
 	for _, f := range files {
+		fileFullPath, _ := filepath.Abs(fullPath + "/" + f.Name())
+		fileRelativePath, _ := filepath.Rel(rootFolder, fileFullPath)
+
 		Files = append(Files, DirInfo{
+			FullPath: "/" + fileRelativePath,
 			Name:     f.Name(),
 			IsFolder: f.IsDir(),
 			Size:     f.Size(),
@@ -57,7 +74,8 @@ func ListFolder(rootFolder string, folder string) (DirInfo, error) {
 	}
 
 	info := DirInfo{
-		Name:     folder,
+		FullPath: relativePath,
+		Name:     relativePath,
 		IsFolder: true,
 		Size:     0,
 		Files:    Files,

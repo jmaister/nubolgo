@@ -30,7 +30,7 @@ class Index extends Component {
                 this.setState({
                     folder: result.data,
                     isLoaded: true,
-                    currentPath: newPath
+                    currentPath: result.data.fullPath
                 });
             });
     }
