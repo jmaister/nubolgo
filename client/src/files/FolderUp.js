@@ -13,9 +13,12 @@ class FolderUp extends Component {
     }
 
     render() { 
-        const isRoot = this.props.path === '/';
+        const isRoot = (this.props.path === '/');
 
-        return ( <div onClick={this.folderUp.bind(this)}>"⬑"</div> );
+
+
+        return isRoot ? (<div className="item"></div>) :
+         ( <div className="item" onClick={this.folderUp.bind(this)}><span className="icon back"></span></div> );
     }
 }
  

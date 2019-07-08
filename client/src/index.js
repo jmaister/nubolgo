@@ -6,6 +6,8 @@ import Axios from "axios";
 import FolderView from "./files/FolderView";
 import FolderUp from './files/FolderUp';
 
+import "./styles/main.scss"
+import "./styles/icons.scss"
 
 class Index extends Component {
 

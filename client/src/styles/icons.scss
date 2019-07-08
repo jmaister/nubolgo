@@ -1,0 +1,38 @@
+
+div {
+    &.item {
+        padding: 3px;
+        margin-left: 10px;
+        height: 1em;
+        cursor: pointer;
+
+        &:hover {
+            background-color: lightblue;
+        }
+    }
+}
+
+span {
+    &.icon {
+        width: 0px;
+        height: 0px;
+
+        &.folder::after { content: "\1F4C1"; }
+        &.file::after { content: "\1F4C4"; }
+        &.back::after { content: "\2B11"; }
+
+        &.loading::after {
+            content: "\21BB";
+            display: inline-block;
+        }
+        &.loading::after {
+            animation:spin 2s infinite linear;
+        }
+    }
+}
+
+@keyframes spin
+{
+  from {transform: rotate(0deg);}
+  to {transform: rotate(359deg);}
+}
