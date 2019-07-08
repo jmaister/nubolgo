@@ -16,25 +16,56 @@ class FolderView extends Component {
         this.props.updatePath(this.props.path + folder.name);
     }
 
+    fileClick(file) {
+        console.log(file);
+    }
+
     render() {
         console.log("state", this.state);
         const { isLoaded, folder } = this.props;
         if (!isLoaded) {
             return <div className="item"><span className="icon loading"></span>Loading...</div>;
         } else {
-            const items = folder.files;
-            console.log("items", items);
-            let folders = items.filter(f => f.isFolder).map(folder => {
-                return <div className="item folder" key={folder.name} onClick={this.folderClick.bind(this, folder)}><span className="icon folder"></span> {folder.name}</div>
-            });
-            let files = items.filter(f => !f.isFolder).map(file => {
-                return <div className="item file" key={file.name}><span className="icon file"></span> {file.name}</div>
+            let sum = 0;
+            const items = folder.files.map(i => {
+                const iconName = i.isFolder ? 'folder' : 'file';
+                let clickFn = i.isFolder ? this.folderClick.bind(this, i)
+                 : this.fileClick.bind(this, i);
+
+                sum = sum + (i.isFolder ? 0 : i.size);
+
+                return <tr className={'item '+ iconName} key={i.name} onClick={clickFn}>
+                    <td>
+                        <span className={"icon " + iconName}></span> {i.name}
+                    </td>
+                    <td className="size">
+                        {i.isFolder ? '-' : i.size}
+                    </td>
+                    <td>
+                        {i.time}
+                    </td>
+                </tr>;
             });
 
-            return <div>
-                {folders}
-                {files}
-            </div>;
+            return <table className="files-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Size</th>
+                        <th>Updated</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {items}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td></td>
+                        <td className="size">{sum}</td>
+                        <td></td>
+                    </tr>
+                </tfoot>
+            </table>;
         }
         
     }
