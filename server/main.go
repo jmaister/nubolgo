@@ -2,8 +2,10 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"path/filepath"
 
 	"./files"
@@ -45,6 +47,7 @@ func main() {
 
 	api.GET("/files", GetFilesHandler)
 	api.POST("/files", PostFilesHandler)
+	api.GET("/download", DownloadFileHandler)
 
 	router.Run(":3000")
 }
@@ -87,4 +90,34 @@ func PostFilesHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"OK": true,
 	})
+}
+
+// DownloadFileHandler is used to download a file from server
+func DownloadFileHandler(c *gin.Context) {
+	path := c.Query("path")
+
+	fullPath := filepath.Clean(config.RootFolder + "/" + path)
+
+	file, err := os.Open(fullPath)
+	if err != nil {
+		fmt.Println("File reading error", err)
+		return
+	}
+	fileInfo, err := file.Stat()
+	if err != nil {
+		fmt.Println("File stat reading error", err)
+		return
+	}
+
+	log.Println("--->", fileInfo.Name())
+
+	reader := file
+	contentLength := fileInfo.Size()
+	contentType := "text/plain" //response.Header.Get("Content-Type")
+
+	extraHeaders := map[string]string{
+		"Content-Disposition": "attachment; filename=\"" + fileInfo.Name() + "\"",
+	}
+
+	c.DataFromReader(http.StatusOK, contentLength, contentType, reader, extraHeaders)
 }

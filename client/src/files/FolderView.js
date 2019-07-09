@@ -17,7 +17,7 @@ class FolderView extends Component {
     }
 
     fileClick(file) {
-        console.log(file);
+        this.props.downloadPath(this.props.path + file.name);
     }
 
     render() {

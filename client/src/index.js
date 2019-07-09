@@ -20,6 +20,7 @@ class Index extends Component {
         }
 
         this.updatePath = this.updatePath.bind(this);
+        this.downloadPath = this.downloadPath.bind(this);
     }
 
     componentDidMount() {
@@ -37,6 +38,10 @@ class Index extends Component {
             });
     }
 
+    downloadPath(path) {
+        window.open('/api/download?path=' + path);
+    }
+
     render() {
         return <div>
             <h1>Loaded path: <b>{this.state.currentPath}</b></h1>
@@ -48,6 +53,7 @@ class Index extends Component {
                 folder={this.state.folder}
                 isLoaded={this.state.isLoaded}
                 updatePath={this.updatePath}
+                downloadPath={this.downloadPath}
                 ></FolderView>
         </div>;
     }
