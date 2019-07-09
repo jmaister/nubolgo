@@ -10,9 +10,9 @@
   "scripts": {
     "clean": "rimraf target",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "webpack --config ./client/webpack.config.js --mode development --progress",
     "build": "webpack --config ./client/webpack.config.js --mode production --progress",
-    "dev": "webpack -w --config ./client/webpack.config.js --mode development"
+    "start": "webpack -w --config ./client/webpack.config.js --mode development",
+    "server": "go run server/main.go"
   },
   "author": "Jordi Burgos <jordiburgos@gmail.com>",
   "license": "MIT",
