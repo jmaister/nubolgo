@@ -27,6 +27,13 @@ class FolderView extends Component {
             return <div className="item"><span className="icon loading"></span>Loading...</div>;
         } else {
             let sum = 0;
+            const dfOptions = {
+                year: 'numeric', month: '2-digit', day: '2-digit',
+                hour: '2-digit', minute: '2-digit', second: '2-digit',
+                timeZoneName: 'short'
+            };
+            const df = Intl.DateTimeFormat('default', dfOptions);
+
             const items = folder.files.map(i => {
                 const iconName = i.isFolder ? 'folder' : 'file';
                 let clickFn = i.isFolder ? this.folderClick.bind(this, i)
@@ -42,7 +49,7 @@ class FolderView extends Component {
                         {i.isFolder ? '-' : i.size}
                     </td>
                     <td>
-                        {i.time}
+                        {df.format(i.time)}
                     </td>
                 </tr>;
             });

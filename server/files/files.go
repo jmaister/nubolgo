@@ -6,7 +6,6 @@ import (
 	"log"
 	"path/filepath"
 	"strings"
-	"time"
 )
 
 // DirInfo stores folder data recursively
@@ -15,7 +14,7 @@ type DirInfo struct {
 	Name     string    `json:"name"`
 	IsFolder bool      `json:"isFolder"`
 	Size     int64     `json:"size"`
-	Time     time.Time `json:"time"`
+	Time     int64     `json:"time"`
 	Files    []DirInfo `json:"files"`
 }
 
@@ -69,7 +68,7 @@ func ListFolder(rootFolder string, folder string) (DirInfo, error) {
 			Name:     f.Name(),
 			IsFolder: f.IsDir(),
 			Size:     f.Size(),
-			Time:     f.ModTime(),
+			Time:     f.ModTime().Unix() * 1000, // In ms.
 		})
 	}
 
