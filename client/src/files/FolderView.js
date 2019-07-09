@@ -8,16 +8,16 @@ class FolderView extends Component {
         this.state = { 
             isLoaded: false
         }
-
-        this.folderClick = this.folderClick.bind(this);
     }
 
     folderClick(folder) {
-        this.props.updatePath(this.props.path + folder.name);
+        console.log("folder:", folder);
+        this.props.updatePath(folder.fullPath);
     }
 
     fileClick(file) {
-        this.props.downloadPath(this.props.path + file.name);
+        console.log("file:", file);
+        this.props.downloadPath(file.fullPath);
     }
 
     render() {
@@ -33,20 +33,25 @@ class FolderView extends Component {
                 timeZoneName: 'short'
             };
             const df = Intl.DateTimeFormat('default', dfOptions);
+            const nf = Intl.NumberFormat('default');
 
             const items = folder.files.map(i => {
                 const iconName = i.isFolder ? 'folder' : 'file';
-                let clickFn = i.isFolder ? this.folderClick.bind(this, i)
-                 : this.fileClick.bind(this, i);
+                let clickFn = i.isFolder 
+                    ? this.folderClick.bind(this, i)
+                    : this.fileClick.bind(this, i);
 
                 sum = sum + (i.isFolder ? 0 : i.size);
 
-                return <tr className={'item '+ iconName} key={i.name} onClick={clickFn}>
+                return <tr className={iconName} key={i.name}>
                     <td>
+                        <input type="checkbox"></input>
+                    </td>
+                    <td className="clickable" onClick={clickFn}>
                         <span className={"icon " + iconName}></span> {i.name}
                     </td>
                     <td className="size">
-                        {i.isFolder ? '-' : i.size}
+                        {i.isFolder ? '-' : nf.format(i.size)}
                     </td>
                     <td>
                         {df.format(i.time)}
@@ -57,6 +62,7 @@ class FolderView extends Component {
             return <table className="files-table">
                 <thead>
                     <tr>
+                        <th><input type="checkbox"></input></th>
                         <th>Name</th>
                         <th>Size</th>
                         <th>Updated</th>
@@ -68,7 +74,8 @@ class FolderView extends Component {
                 <tfoot>
                     <tr>
                         <td></td>
-                        <td className="size">{sum}</td>
+                        <td></td>
+                        <td className="size">{nf.format(sum)}</td>
                         <td></td>
                     </tr>
                 </tfoot>

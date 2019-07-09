@@ -18,7 +18,7 @@ class FolderUp extends Component {
 
 
         return isRoot ? (<div className="item"></div>) :
-         ( <div className="item" onClick={this.folderUp.bind(this)}><span className="icon back"></span></div> );
+         ( <div className="item clickable" onClick={this.folderUp.bind(this)}><span className="icon back"></span></div> );
     }
 }
  
