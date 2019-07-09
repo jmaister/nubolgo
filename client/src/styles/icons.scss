@@ -1,36 +1,4 @@
 
-div, tr {
-    &.item {
-        padding: 3px;
-        margin-left: 10px;
-        height: 1em;
-        cursor: pointer;
-
-        &:hover {
-            background-color: lightblue;
-        }
-    }
-}
-
-.files-table {
-    width: 80%;
-
-    tr {
-        &:hover {
-            background-color: lightblue;
-        }
-
-        td, th {
-            padding: 10px;
-            text-align: left;
-
-            &.size {
-                text-align: right;
-            }
-        }
-    }
-}
-
 span {
     &.icon {
         width: 0px;

@@ -6,6 +6,7 @@ import Axios from "axios";
 import FolderView from "./files/FolderView";
 import FolderUp from './files/FolderUp';
 
+import "./styles/reset.scss"
 import "./styles/main.scss"
 import "./styles/icons.scss"
 
