@@ -10,7 +10,7 @@ import (
 
 	"./files"
 
-	"github.com/gin-gonic/contrib/static"
+	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 )
 
@@ -28,10 +28,20 @@ func main() {
 	config.RootFolder = *rootFolder
 
 	// TODO: check if folder exists, or create
+	rootPath, err := filepath.Abs(config.RootFolder)
+	if err != nil {
+		log.Println("Error:", err)
+		return
+	}
+	log.Println("Using root path: ", rootPath)
 
 	router := gin.Default()
 
-	clientPath, _ := filepath.Abs("client/dist")
+	clientPath, err := filepath.Abs("dist")
+	if err != nil {
+		log.Println("Error:", err)
+		return
+	}
 	log.Println("Using client files from: ", clientPath)
 
 	router.Use(static.Serve("/", static.LocalFile(clientPath, true)))
