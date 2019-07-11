@@ -18,16 +18,11 @@ WORKDIR /go/src/app
 RUN go get -u github.com/gin-gonic/gin
 RUN go get -u github.com/gin-contrib/static
 COPY server/ ./server
-RUN echo $GOROOT
-RUN echo $GOPATH
-RUN ls /go/src/github.com
-# RUN go build -v -a -ldflags '-extldflags "-static"' -o main server/main.go
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags '-extldflags "-static"' -o main server/main.go
 
 FROM alpine:3.9.4
 WORKDIR /usr/src/app
 COPY --from=buildui /usr/src/app/dist ./dist
 COPY --from=buildserver /go/src/app/main ./main
-RUN ls -l
 ENTRYPOINT ["/usr/src/app/main"]
 CMD [ "-root", "/" ]
