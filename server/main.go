@@ -109,6 +109,7 @@ func DownloadFileHandler(c *gin.Context) {
 	fullPath := filepath.Clean(config.RootFolder + "/" + path)
 
 	file, err := os.Open(fullPath)
+	defer file.Close()
 	if err != nil {
 		fmt.Println("File reading error", err)
 		return
