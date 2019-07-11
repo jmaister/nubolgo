@@ -5,6 +5,7 @@ import Axios from "axios";
 
 import FolderView from "./files/FolderView";
 import FolderUp from './files/FolderUp';
+import Uploader from './files/Uploader';
 
 import "./styles/reset.scss"
 import "./styles/main.scss"
@@ -46,6 +47,7 @@ class Index extends Component {
     render() {
         return <div>
             <h1>Loaded path: <b>{this.state.currentPath}</b></h1>
+            <Uploader path={this.state.currentPath}></Uploader>
             <FolderUp 
                 path={this.state.currentPath}
                 updatePath={this.updatePath}></FolderUp>
@@ -59,6 +61,5 @@ class Index extends Component {
         </div>;
     }
 };
-
 
 ReactDOM.render(<Index />, document.getElementById("index"));

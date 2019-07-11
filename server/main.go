@@ -56,8 +56,8 @@ func main() {
 	}
 
 	api.GET("/files", GetFilesHandler)
-	api.POST("/files", PostFilesHandler)
 	api.GET("/download", DownloadFileHandler)
+	api.POST("/upload", UploadFileHandler)
 
 	router.Run(":3000")
 }
@@ -80,26 +80,6 @@ func GetFilesHandler(c *gin.Context) {
 		c.Header("Content-Type", "application/json")
 		c.JSON(http.StatusOK, data)
 	}
-}
-
-// PostFilesHandler stores files from clients
-func PostFilesHandler(c *gin.Context) {
-	form, _ := c.MultipartForm()
-	files := form.File["upload[]"]
-	path := form.Value["path"]
-
-	log.Println("path:", path)
-
-	for _, file := range files {
-		log.Println(file.Filename)
-		log.Println(config.RootFolder + "/" + file.Filename)
-
-		//c.SaveUploadedFile(file, config.RootFolder+path+'/'+file.Filename)
-	}
-
-	c.JSON(http.StatusOK, gin.H{
-		"OK": true,
-	})
 }
 
 // DownloadFileHandler is used to download a file from server
@@ -131,4 +111,37 @@ func DownloadFileHandler(c *gin.Context) {
 	}
 
 	c.DataFromReader(http.StatusOK, contentLength, contentType, reader, extraHeaders)
+}
+
+// UploadFileHandler is used to handle file uploads
+func UploadFileHandler(c *gin.Context) {
+
+	form, _ := c.MultipartForm()
+	path := form.Value["path"][0]
+	files := form.File["files[]"]
+	for _, file := range files {
+		fullPath := filepath.Clean(config.RootFolder + "/" + path + "/" + file.Filename)
+
+		// TODO: create intermediate folders for file.Filename
+
+		fmt.Println("filename:", file.Filename)
+		fmt.Println("uploading to:", fullPath)
+
+		// Upload the file to specific dst.
+		err := c.SaveUploadedFile(file, fullPath)
+		if err != nil {
+			fmt.Println("error!", err)
+		}
+	}
+
+	fmt.Println("path:", path)
+
+	c.Request.ParseForm()
+	for key, value := range c.Request.PostForm {
+		fmt.Println(key, value)
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"OK": true,
+	})
 }
