@@ -11,12 +11,10 @@ class FolderView extends Component {
     }
 
     folderClick(folder) {
-        console.log("folder:", folder);
         this.props.updatePath(folder.fullPath);
     }
 
     fileClick(file) {
-        console.log("file:", file);
         this.props.downloadPath(file.fullPath);
     }
 
@@ -47,8 +45,8 @@ class FolderView extends Component {
                     <td>
                         <input type="checkbox"></input>
                     </td>
-                    <td className="clickable" onClick={clickFn}>
-                        <span className={"icon " + iconName}></span> {i.name}
+                    <td className="td-link">
+                        <a className="link" href={"/api/download?path=" + i.fullPath}><span className={"icon " + iconName}></span> {i.name}</a>
                     </td>
                     <td className="size">
                         {i.isFolder ? '-' : nf.format(i.size)}
