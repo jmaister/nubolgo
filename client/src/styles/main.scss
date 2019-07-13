@@ -25,6 +25,9 @@
         &:hover {
             background-color: lightblue;
         }
+        &.selected {
+            background-color: darken($color: lightblue, $amount: 25)
+        }       
 
         td, th {
             padding: 10px;
@@ -43,7 +46,7 @@
                 width: 100%;
                 display: inline-block;
             }
-        }        
+        }
     }
 
     tfoot {
@@ -63,7 +66,8 @@
     background-color: #fafafa;
     color: #6f6f6f;
     outline: none;
-    transition: border .24s ease-in-out;
+    transition: border 3s ease-in-out;
+    margin: 10px;
 
     div {
         width: 100%;

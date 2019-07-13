@@ -4,8 +4,8 @@ import ReactDOM from "react-dom";
 import Axios from "axios";
 
 import FolderView from "./files/FolderView";
-import FolderUp from './files/FolderUp';
 import Uploader from './files/Uploader';
+import Actions from './actions/Actions';
 
 import "./styles/reset.scss"
 import "./styles/main.scss"
@@ -18,11 +18,12 @@ class Index extends Component {
         this.state = { 
             currentPath: '/',
             folder: [],
-            isLoaded: false
+            isLoaded: false,
+            selected: {}
         }
 
         this.updatePath = this.updatePath.bind(this);
-        this.downloadPath = this.downloadPath.bind(this);
+        this.updateSelected = this.updateSelected.bind(this);
     }
 
     componentDidMount() {
@@ -35,28 +36,33 @@ class Index extends Component {
                 this.setState({
                     folder: result.data,
                     isLoaded: true,
-                    currentPath: result.data.fullPath
+                    currentPath: result.data.fullPath,
+                    selected: {}
                 });
             });
     }
 
-    downloadPath(path) {
-        window.open('/api/download?path=' + path);
+    updateSelected(key, value) {
+        this.setState({
+            selected:{...this.state.selected, [key]: value }
+        });
     }
 
     render() {
         return <div>
             <h1>Loaded path: <b>{this.state.currentPath}</b></h1>
             <Uploader path={this.state.currentPath}></Uploader>
-            <FolderUp 
-                path={this.state.currentPath}
-                updatePath={this.updatePath}></FolderUp>
+            <Actions
+                folder={this.state.folder}
+                selected={this.state.selected}
+                ></Actions>
             <FolderView 
                 path={this.state.currentPath}
                 folder={this.state.folder}
                 isLoaded={this.state.isLoaded}
+                selected={this.state.selected}
+                updateSelected={this.updateSelected}
                 updatePath={this.updatePath}
-                downloadPath={this.downloadPath}
                 ></FolderView>
         </div>;
     }

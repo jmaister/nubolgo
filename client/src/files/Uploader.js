@@ -5,7 +5,7 @@ import Dropzone from 'react-dropzone'
 class Uploader extends Component {
     constructor(props) {
         super(props);
-        this.state = {  }
+        this.state = {};
 
         this.onDrop = this.onDrop.bind(this);
     }

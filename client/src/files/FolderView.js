@@ -1,29 +1,33 @@
 import React, { Component } from 'react';
 
-
 class FolderView extends Component {
 
     constructor(props) {
         super(props);
-        this.state = { 
-            isLoaded: false
-        }
+        this.state = {
+            selected: {}
+        };
     }
 
     folderClick(folder) {
         this.props.updatePath(folder.fullPath);
     }
 
-    fileClick(file) {
-        this.props.downloadPath(file.fullPath);
+    folderUp() {
+        let newPath = this.props.path + '/../';
+        this.props.updatePath(newPath);
     }
 
+    onChange(key, value) {
+        this.props.updateSelected(key, value);
+    }
+    
     render() {
-        console.log("state", this.state);
         const { isLoaded, folder } = this.props;
         if (!isLoaded) {
             return <div className="item"><span className="icon loading"></span>Loading...</div>;
         } else {
+            const isRootFolder = folder.fullPath === '/';
             let sum = 0;
             const dfOptions = {
                 year: 'numeric', month: '2-digit', day: '2-digit',
@@ -35,18 +39,20 @@ class FolderView extends Component {
 
             const items = folder.files.map(i => {
                 const iconName = i.isFolder ? 'folder' : 'file';
-                let clickFn = i.isFolder 
-                    ? this.folderClick.bind(this, i)
-                    : this.fileClick.bind(this, i);
+                let link = i.isFolder 
+                    ? <span className="link clickable" onClick={this.folderClick.bind(this, i)}><span className={"icon " + iconName}></span> {i.name}</span>
+                    : <a className="link" href={"/api/download?path=" + i.fullPath}><span className={"icon " + iconName}></span> {i.name}</a>;
 
                 sum = sum + (i.isFolder ? 0 : i.size);
 
-                return <tr className={iconName} key={i.name}>
+                return <tr className={iconName + " " + (this.props.selected[i.name] ? 'selected' : '')} key={i.name}>
                     <td>
-                        <input type="checkbox"></input>
+                        <input type="checkbox"
+                            onChange={(e) => this.onChange(i.name, e.target.checked)}
+                            value={this.props.selected[i.name]}></input>
                     </td>
                     <td className="td-link">
-                        <a className="link" href={"/api/download?path=" + i.fullPath}><span className={"icon " + iconName}></span> {i.name}</a>
+                        {link}
                     </td>
                     <td className="size">
                         {i.isFolder ? '-' : nf.format(i.size)}
@@ -56,6 +62,19 @@ class FolderView extends Component {
                     </td>
                 </tr>;
             });
+
+            const goUpRow = <tr key="up">
+                <td></td>
+                <td className="td-link">
+                    <span className="link clickable" onClick={this.folderUp.bind(this)}><span className={"icon back"}></span></span>
+                </td>
+                <td className="size">
+                    -
+                </td>
+                <td>
+                    -
+                </td>
+            </tr>;
 
             return <table className="files-table">
                 <thead>
@@ -67,6 +86,7 @@ class FolderView extends Component {
                     </tr>
                 </thead>
                 <tbody>
+                    {isRootFolder ? null : goUpRow}
                     {items}
                 </tbody>
                 <tfoot>

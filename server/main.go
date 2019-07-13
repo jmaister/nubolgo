@@ -47,14 +47,6 @@ func main() {
 	router.Use(static.Serve("/", static.LocalFile(clientPath, true)))
 
 	api := router.Group("/api")
-	{
-		api.GET("/", func(c *gin.Context) {
-			c.JSON(http.StatusOK, gin.H{
-				"message": "pong",
-			})
-		})
-	}
-
 	api.GET("/files", GetFilesHandler)
 	api.GET("/download", DownloadFileHandler)
 	api.POST("/upload", UploadFileHandler)
