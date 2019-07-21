@@ -31,7 +31,7 @@ class Index extends Component {
     }
 
     updatePath(newPath) {
-        Axios.get('/api/files?path=' + newPath)
+        Axios.get('/api/list?path=' + newPath)
             .then(result => {
                 this.setState({
                     folder: result.data,
@@ -68,4 +68,4 @@ class Index extends Component {
     }
 };
 
-ReactDOM.render(<Index />, document.getElementById("index"));
+ReactDOM.render(<Index />, document.getElementById("main"));

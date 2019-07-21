@@ -16,48 +16,59 @@ const htmlPlugin = new HtmlWebPackPlugin({
     favicon: PATHS.public + "favicon.ico"
 });
 
-module.exports = {
-    entry: PATHS.src + 'index.js',
-    output: {
-        path: PATHS.build,
-        filename: 'index.js'
-    },
-    optimization: {
-        // true for tree shaking
-        usedExports: true
-    },
-    module: {
-        rules: [
-            {
-                test: /\.js$/,
-                exclude: /node_modules/,
-                use: {
-                    loader: "babel-loader"
-                }
-            },
-            {
-                test: /\.scss$/,
-                exclude: /node_modules/,
-                use: [
-                    "style-loader", // creates style nodes from JS strings
-                    'css-loader', // translates CSS into CommonJS
-                    "sass-loader" // compiles Sass to CSS, using Node Sass by default
-                ]
-            },
-            {
-                test: /\.ico$/,
-                exclude: /node_modules/,
-                use: {
-                    loader: "image-loader"
-                }
+
+module.exports = (env, args) => {
+    const isProd = args.mode == 'production';
+
+    return {
+        entry: PATHS.src + 'index.js',
+        output: {
+            path: PATHS.build,
+            filename: 'index.js'
+        },
+        optimization: {
+            // true for tree shaking
+            usedExports: isProd,
+
+            // 
+            splitChunks: {
+                chunks: 'all'
             }
+        },
+        devtool: isProd ? '' : 'cheap-eval-source-map',
+        module: {
+            rules: [
+                {
+                    test: /\.js$/,
+                    exclude: /node_modules/,
+                    use: {
+                        loader: "babel-loader"
+                    }
+                },
+                {
+                    test: /\.scss$/,
+                    exclude: /node_modules/,
+                    use: [
+                        "style-loader", // creates style nodes from JS strings
+                        'css-loader', // translates CSS into CommonJS
+                        "sass-loader" // compiles Sass to CSS, using Node Sass by default
+                    ]
+                },
+                {
+                    test: /\.ico$/,
+                    exclude: /node_modules/,
+                    use: {
+                        loader: "image-loader"
+                    }
+                }
+            ]
+        },
+        plugins: [
+            new CleanWebpackPlugin(),
+            htmlPlugin,
+            new CopyWebpackPlugin([
+                { from: PATHS.public }
+            ])
         ]
-    },
-    plugins: [
-        new CleanWebpackPlugin(),
-        htmlPlugin,
-        new CopyWebpackPlugin([
-            { from: PATHS.public }
-        ])
-    ]
+    }
 };

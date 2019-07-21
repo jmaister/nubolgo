@@ -21,7 +21,7 @@ class Uploader extends Component {
             formData.append("files[]", file);
         });
         
-        fetch('/api/upload', {
+        fetch('/api/file', {
             // content-type header should not be specified!
             method: 'POST',
             body: formData

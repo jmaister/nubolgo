@@ -47,9 +47,10 @@ func main() {
 	router.Use(static.Serve("/", static.LocalFile(clientPath, true)))
 
 	api := router.Group("/api")
-	api.GET("/files", GetFilesHandler)
-	api.GET("/download", DownloadFileHandler)
-	api.POST("/upload", UploadFileHandler)
+	api.GET("/list", GetFilesHandler)
+	api.GET("/file", DownloadFileHandler)
+	api.POST("/file", UploadFileHandler)
+	api.DELETE("/file", DeleteFileHandler)
 
 	router.Run(":3000")
 }
@@ -131,6 +132,25 @@ func UploadFileHandler(c *gin.Context) {
 	c.Request.ParseForm()
 	for key, value := range c.Request.PostForm {
 		fmt.Println(key, value)
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"OK": true,
+	})
+}
+
+// DeleteFileHandler is used to delete files
+func DeleteFileHandler(c *gin.Context) {
+
+	path := c.Query("path")
+
+	fullPath := filepath.Clean(config.RootFolder + "/" + path)
+	log.Println("---> deleting...", fullPath)
+
+	err := os.Remove(fullPath)
+	if err != nil {
+		fmt.Println("File delete error", err)
+		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{

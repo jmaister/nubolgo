@@ -41,7 +41,7 @@ class FolderView extends Component {
                 const iconName = i.isFolder ? 'folder' : 'file';
                 let link = i.isFolder 
                     ? <span className="link clickable" onClick={this.folderClick.bind(this, i)}><span className={"icon " + iconName}></span> {i.name}</span>
-                    : <a className="link" href={"/api/download?path=" + i.fullPath}><span className={"icon " + iconName}></span> {i.name}</a>;
+                    : <a className="link" href={"/api/file?path=" + i.fullPath}><span className={"icon " + iconName}></span> {i.name}</a>;
 
                 sum = sum + (i.isFolder ? 0 : i.size);
 
