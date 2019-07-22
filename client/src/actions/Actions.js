@@ -31,11 +31,12 @@ class Actions extends Component {
     }
 
     confirmDelete() {
-        const promises = Object.getOwnPropertyNames(this.props.selected).map(file => {
-            return Axios.delete('/api/file?path=' + file);
+        const promises = this.getSelectedFiles().map(file => {
+            return Axios.delete('/api/file?path=' + file.fullPath);
         });
         Promise.all(promises).then(responses => {
             this.setState({
+                isDeleteConfirmOpen: false,
                 isDeleteResultOpen: true
             });
             console.log("responses", responses);
@@ -46,15 +47,20 @@ class Actions extends Component {
         this.setState({
             isDeleteResultOpen: false
         });
+        this.props.updatePath(this.props.path);
+    }
+
+    getSelectedFiles() {
+        return this.props.folder.files 
+        ? this.props.folder.files.filter(e => this.props.selected[e.name])
+        : [];
     }
 
     render() { 
         const fileList = <ul>
-            {this.props.folder.files ? this.props.folder.files
-            .filter(e => this.props.selected[e.name])
-            .map(e => {
+            {this.getSelectedFiles().map(e => {
                 return <li key={e.name}>{e.name}</li>;
-            }): null}
+            })}
             </ul>;
         return <div>
             <button onClick={this.delete}>Delete</button>
@@ -67,8 +73,9 @@ class Actions extends Component {
                 </div>
             </ReactModal>
             <ReactModal isOpen={this.state.isDeleteResultOpen}>
-                asdf
-                <button onClick={this.closeResultDelete}>No</button>
+                <div>Deleted files:</div>
+                {fileList}
+                <button onClick={this.closeResultDelete}>Close</button>
             </ReactModal>
         </div>;
     }

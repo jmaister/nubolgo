@@ -84,12 +84,18 @@ func DownloadFileHandler(c *gin.Context) {
 	file, err := os.Open(fullPath)
 	defer file.Close()
 	if err != nil {
-		fmt.Println("File reading error", err)
+		log.Println("File reading error", err)
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "File reading error",
+		})
 		return
 	}
 	fileInfo, err := file.Stat()
 	if err != nil {
-		fmt.Println("File stat reading error", err)
+		log.Println("File stat reading error", err)
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "File stat reading error",
+		})
 		return
 	}
 

@@ -55,6 +55,8 @@ class Index extends Component {
             <Actions
                 folder={this.state.folder}
                 selected={this.state.selected}
+                path={this.state.currentPath}
+                updatePath={this.updatePath}
                 ></Actions>
             <FolderView 
                 path={this.state.currentPath}

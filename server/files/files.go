@@ -53,8 +53,7 @@ func ListFolder(rootFolder string, folder string) (DirInfo, error) {
 
 	files, err := ioutil.ReadDir(fullPath)
 	if err != nil {
-		// log.Fatal(err)
-		return DirInfo{}, err
+		return DirInfo{}, errors.New(folder + " does not exist")
 	}
 
 	Files := []DirInfo{}
