@@ -12,7 +12,9 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack --config ./client/webpack.config.js --mode production --progress",
     "start": "webpack -w --config ./client/webpack.config.js --mode development",
-    "server": "go run server/main.go"
+    "server": "cd server && go run main.go",
+    "sbuild": "cd server && cross-env GIN_MODE=release go build main.go",
+    "srun": "./server/main"
   },
   "author": "Jordi Burgos <jordiburgos@gmail.com>",
   "license": "MIT",
@@ -23,6 +25,7 @@
     "babel-loader": "8.0.5",
     "clean-webpack-plugin": "3.0.0",
     "copy-webpack-plugin": "5.0.3",
+    "cross-env": "^7.0.3",
     "css-loader": "3.0.0",
     "html-webpack-plugin": "3.2.0",
     "node-sass": "4.12.0",

@@ -8,7 +8,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"./files"
+	"jordiburgos.com/nubolgo/files"
 
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
@@ -37,7 +37,8 @@ func main() {
 
 	router := gin.Default()
 
-	clientPath, err := filepath.Abs("dist")
+	// TODO: check that the React app folder exists
+	clientPath, err := filepath.Abs("../dist")
 	if err != nil {
 		log.Println("Error:", err)
 		return
@@ -76,9 +77,9 @@ func GetFilesHandler(c *gin.Context) {
 
 // DownloadFileHandler is used to download a file from server
 func DownloadFileHandler(c *gin.Context) {
-	path := c.Query("path")
+	requestedFile := c.Query("path")
 
-	fullPath := filepath.Clean(config.RootFolder + "/" + path)
+	fullPath := filepath.Clean(config.RootFolder + "/" + requestedFile)
 
 	file, err := os.Open(fullPath)
 	defer file.Close()
@@ -108,29 +109,41 @@ func DownloadFileHandler(c *gin.Context) {
 // UploadFileHandler is used to handle file uploads
 func UploadFileHandler(c *gin.Context) {
 
-	form, _ := c.MultipartForm()
-	path := form.Value["path"][0]
+	form, err := c.MultipartForm()
+	if err != nil {
+		c.String(http.StatusBadRequest, fmt.Sprintf("get form err: %s", err.Error()))
+		return
+	}
+	targetPath := form.Value["path"][0]
 	files := form.File["files[]"]
 	for _, file := range files {
-		fullPath := filepath.Clean(config.RootFolder + "/" + path + "/" + file.Filename)
+		targetFileAbsolutePath := filepath.Clean(config.RootFolder + "/" + targetPath + "/" + file.Filename)
 
-		// TODO: create intermediate folders for file.Filename
+		// TODO: check max file size
+		fmt.Println(file.Size)
 
-		fmt.Println("filename:", file.Filename)
-		fmt.Println("uploading to:", fullPath)
+		// Create intermediate folders for file.Filename
+		targetFolderAbsolutePath := filepath.Clean(filepath.Dir(targetFileAbsolutePath))
+		if _, err := os.Stat(targetFolderAbsolutePath); err == nil {
+			// Folder exists
+		} else if os.IsNotExist(err) {
+			// Folder does not exist
+			os.MkdirAll(targetFolderAbsolutePath, 0770)
+		} else {
+			fmt.Println("Unknown error:", err)
+		}
 
 		// Upload the file to specific dst.
-		err := c.SaveUploadedFile(file, fullPath)
+		err := c.SaveUploadedFile(file, targetFileAbsolutePath)
 		if err != nil {
+			// TODO: send error response
 			fmt.Println("error!", err)
 		}
 	}
 
-	fmt.Println("path:", path)
-
 	c.Request.ParseForm()
 	for key, value := range c.Request.PostForm {
-		fmt.Println(key, value)
+		fmt.Println("request key-value", key, value)
 	}
 
 	c.JSON(http.StatusOK, gin.H{
